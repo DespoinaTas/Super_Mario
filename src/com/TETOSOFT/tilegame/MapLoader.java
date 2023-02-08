@@ -17,28 +17,19 @@ import com.TETOSOFT.tilegame.sprites.*;
 */
 public class MapLoader 
 {
-    private ArrayList tiles;
-    public int currentMap;
-    private GraphicsConfiguration gc;
-
-    // host sprites used for cloning
-    private Sprite playerSprite;
-    private Sprite musicSprite;
-    private Sprite coinSprite;
-    private Sprite goalSprite;
-    private Sprite grubSprite;
-    private Sprite flySprite;
-
+    private MapLoaderProduct4 mapLoaderProduct4 = new MapLoaderProduct4();
+	private MapLoaderProduct2 mapLoaderProduct2 = new MapLoaderProduct2();
+	public int currentMap;
     /**
         Creates a new ResourceManager with the specified
         GraphicsConfiguration.
     */
     public MapLoader(GraphicsConfiguration gc) 
     {
-        this.gc = gc;
-        loadTileImages();
+        mapLoaderProduct2.setGc(gc);
+        mapLoaderProduct4.getMapLoaderProduct().loadTileImages();
         loadCreatureSprites();
-        loadPowerUpSprites();
+        mapLoaderProduct4.loadPowerUpSprites();
     }
 
 
@@ -47,48 +38,20 @@ public class MapLoader
     */
     public Image loadImage(String name) 
     {
-        String filename = "images/" + name;
-        return new ImageIcon(filename).getImage();
+        return mapLoaderProduct4.getMapLoaderProduct().loadImage(name);
     }
 
 
     public Image getMirrorImage(Image image) 
     {
-        return getScaledImage(image, -1, 1);
+        return mapLoaderProduct2.getScaledImage(image, -1, 1);
     }
 
 
     public Image getFlippedImage(Image image) 
     {
-        return getScaledImage(image, 1, -1);
+        return mapLoaderProduct2.getScaledImage(image, 1, -1);
     }
-
-
-    private Image getScaledImage(Image image, float x, float y) 
-    {
-
-        AffineTransform transform = transform(image, x, y);
-		// create a transparent (not translucent) image
-        Image newImage = gc.createCompatibleImage(
-            image.getWidth(null),
-            image.getHeight(null),
-            Transparency.BITMASK);
-
-        // draw the transformed image
-        Graphics2D g = (Graphics2D)newImage.getGraphics();
-        g.drawImage(image, transform, null);
-        g.dispose();
-
-        return newImage;
-    }
-
-
-	private AffineTransform transform(Image image, float x, float y) {
-		AffineTransform transform = new AffineTransform();
-		transform.scale(x, y);
-		transform.translate((x - 1) * image.getWidth(null) / 2, (y - 1) * image.getHeight(null) / 2);
-		return transform;
-	}
 
 
     public TileMap loadNextMap() 
@@ -98,8 +61,8 @@ public class MapLoader
         {
             currentMap++;
             try {
-                map = loadMap(
-                    "maps/map" + currentMap + ".txt");
+                map = mapLoaderProduct4.loadMap(
+                    "maps/map" + currentMap + ".txt", this);
             }
             catch (IOException ex) 
             {
@@ -120,8 +83,8 @@ public class MapLoader
     public TileMap reloadMap() 
     {
         try {
-            return loadMap(
-                "maps/map" + currentMap + ".txt");
+            return mapLoaderProduct4.loadMap(
+                "maps/map" + currentMap + ".txt", this);
         }
         catch (IOException ex) {
             ex.printStackTrace();
@@ -130,71 +93,7 @@ public class MapLoader
     }
 
 
-    private TileMap loadMap(String filename)
-        throws IOException
-    {
-        ArrayList lines = new ArrayList();
-        int width = width(filename);
-		int height = 0;
-
-        // read every line in the text file into the list
-        BufferedReader reader = new BufferedReader(
-            new FileReader(filename));
-        while (true) {
-            String line = reader.readLine();
-            // no more lines to read
-            if (line == null) {
-                reader.close();
-                break;
-            }
-
-            // add every line except for comments
-            if (!line.startsWith("#")) {
-                lines.add(line);
-            }
-        }
-
-        // parse the lines to create a TileEngine
-        height = lines.size();
-        TileMap newMap = new TileMap(width, height);
-        for (int y=0; y<height; y++) {
-            String line = (String)lines.get(y);
-            for (int x=0; x<line.length(); x++) {
-                char ch = line.charAt(x);
-
-                // check if the char represents tile A, B, C etc.
-                int tile = ch - 'A';
-                if (tile >= 0 && tile < tiles.size()) {
-                    newMap.setTile(x, y, (Image)tiles.get(tile));
-                }
-
-                // check if the char represents a sprite
-                else if (ch == 'o') {
-                    addSprite(newMap, coinSprite, x, y);
-                }
-                else if (ch == '!') {
-                    addSprite(newMap, musicSprite, x, y);
-                }
-                else if (ch == '*') {
-                    addSprite(newMap, goalSprite, x, y);
-                }
-                else if (ch == '1') {
-                    addSprite(newMap, grubSprite, x, y);
-                }
-                else if (ch == '2') {
-                    addSprite(newMap, flySprite, x, y);
-                }
-            }
-        }
-
-        Sprite player = player(lines);
-		newMap.setPlayer(player);
-
-        return newMap;
-    }
-
-
-	private int width(String filename) throws FileNotFoundException, IOException {
+    public int width(String filename) throws FileNotFoundException, IOException {
 		int width = 0;
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		while (true) {
@@ -210,35 +109,19 @@ public class MapLoader
 	}
 
 
-	private Sprite player(ArrayList lines) {
-		Sprite player = (Sprite) playerSprite.clone();
-		player.setX(TileMapDrawer.tilesToPixels(3));
-		player.setY(lines.size());
-		return player;
-	}
-
-
-    private void addSprite(TileMap map,
+	public void addSprite(TileMap map,
         Sprite hostSprite, int tileX, int tileY)
     {
         if (hostSprite != null) {
-            map(map, hostSprite, tileX, tileY);
+            mapLoaderProduct4.map(map, hostSprite, tileX, tileY);
         }
     }
 
 
-	private void map(TileMap map, Sprite hostSprite, int tileX, int tileY) {
-		Sprite sprite = sprite(hostSprite, tileX, tileY);
-		map.addSprite(sprite);
-	}
+	
 
 
-	private Sprite sprite(Sprite hostSprite, int tileX, int tileY) {
-		Sprite sprite = (Sprite) hostSprite.clone();
-		sprite.setX(TileMapDrawer.tilesToPixels(tileX) + (TileMapDrawer.tilesToPixels(1) - sprite.getWidth()) / 2);
-		sprite.setY(TileMapDrawer.tilesToPixels(tileY + 1) - sprite.getHeight());
-		return sprite;
-	}
+	
 
 
     // -----------------------------------------------------------
@@ -248,21 +131,7 @@ public class MapLoader
 
     public void loadTileImages()
     {
-        // keep looking for tile A,B,C, etc. this makes it
-        // easy to drop new tiles in the images/ directory
-        tiles = new ArrayList();
-        char ch = 'A';
-        
-        while (true) 
-        {
-            String name = ch + ".png";
-            File file = new File("images/" + name);
-            if (!file.exists()) 
-                break;
-            
-            tiles.add(loadImage(name));
-            ch++;
-        }
+        mapLoaderProduct4.getMapLoaderProduct().loadTileImages();
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,7 +139,7 @@ public class MapLoader
     public void loadCreatureSprites() 
     {
 
-        Image[][] images = images();
+        Image[][] images = mapLoaderProduct4.getMapLoaderProduct().images();
 		for (int i=0; i<images[0].length; i++) 
         {
             // right-facing images
@@ -294,24 +163,13 @@ public class MapLoader
         }
 
         // create creature sprites
-        playerSprite = new Player (playerAnim[0], playerAnim[1],playerAnim[2], playerAnim[3]);
-        flySprite = new Fly (flyAnim[0], flyAnim[1],flyAnim[2], flyAnim[3]);
-        grubSprite = new Grub (grubAnim[0], grubAnim[1],grubAnim[2], grubAnim[3]);
+        mapLoaderProduct4.getMapLoaderProduct3().setPlayerSprite(new Player(playerAnim[0], playerAnim[1], playerAnim[2], playerAnim[3]));
+        mapLoaderProduct4.setFlySprite(new Fly(flyAnim[0], flyAnim[1], flyAnim[2], flyAnim[3]));
+        mapLoaderProduct4.setGrubSprite(new Grub(grubAnim[0], grubAnim[1], grubAnim[2], grubAnim[3]));
     }
 
 
-	private Image[][] images() {
-		Image[][] images = new Image[4][];
-		images[0] = new Image[] { loadImage("player.png"), loadImage("fly1.png"), loadImage("fly2.png"),
-				loadImage("fly3.png"), loadImage("grub1.png"), loadImage("grub2.png") };
-		images[1] = new Image[images[0].length];
-		images[2] = new Image[images[0].length];
-		images[3] = new Image[images[0].length];
-		return images;
-	}
-
-
-    private Animation createPlayerAnim(Image player)
+	private Animation createPlayerAnim(Image player)
     {
         Animation anim = new Animation();
         anim.addFrame(player, 250);
@@ -337,33 +195,6 @@ public class MapLoader
         anim.addFrame(img1, 250);
         anim.addFrame(img2, 250);
         return anim;
-    }
-
-
-    private void loadPowerUpSprites() 
-    {
-        // create "goal" sprite
-        Animation anim = new Animation();
-        anim.addFrame(loadImage("heart.png"), 150);
-        goalSprite = new PowerUp.Goal(anim);
-
-        // create "star" sprite
-        anim = new Animation();
-        anim.addFrame(loadImage("coin1.png"),250 ) ;  
-        anim.addFrame(loadImage("coin2.png"),250);
-        anim.addFrame(loadImage("coin3.png"),250);
-        anim.addFrame(loadImage("coin4.png"),250);
-        anim.addFrame(loadImage("coin5.png"),250);
-        coinSprite = new PowerUp.Star(anim);
-
-        // create "music" sprite
-        anim = new Animation();
-        anim.addFrame(loadImage("music1.png"), 150);
-        anim.addFrame(loadImage("music2.png"), 150);
-        anim.addFrame(loadImage("music3.png"), 150);
-        anim.addFrame(loadImage("music2.png"), 150);
-        musicSprite = new PowerUp.Music(anim);
-        musicSprite=new PowerUp.Music(anim);
     }
 
 }

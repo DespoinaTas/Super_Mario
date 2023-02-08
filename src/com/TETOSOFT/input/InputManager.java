@@ -11,7 +11,10 @@ public class InputManager implements KeyListener, MouseListener,
     MouseMotionListener, MouseWheelListener
 {
     
-    public static final Cursor INVISIBLE_CURSOR =
+    private InputManagerProduct inputManagerProduct = new InputManagerProduct();
+
+
+	public static final Cursor INVISIBLE_CURSOR =
         Toolkit.getDefaultToolkit().createCustomCursor(
             Toolkit.getDefaultToolkit().getImage(""),
             new Point(0,0),
@@ -40,7 +43,6 @@ public class InputManager implements KeyListener, MouseListener,
     private Point mouseLocation;
     private Point centerLocation;
     private Component comp;
-    private Robot robot;
     private boolean isRecentering;
 
   
@@ -66,33 +68,12 @@ public class InputManager implements KeyListener, MouseListener,
 
     public void setRelativeMouseMode(boolean mode) 
     {
-        if (mode == isRelativeMouseMode()) {
-            return;
-        }
-
-        robot(mode);
-		if (mode) {
-        }
-        else {
-            robot = null;
-        }
+        inputManagerProduct.setRelativeMouseMode(mode);
     }
 
 
-	private void robot(boolean mode) {
-		if (mode) {
-			try {
-				robot = new Robot();
-			} catch (AWTException ex) {
-				robot = null;
-			}
-		} else {
-		}
-	}
-
-
-    public boolean isRelativeMouseMode() {
-        return (robot != null);
+	public boolean isRelativeMouseMode() {
+        return inputManagerProduct.isRelativeMouseMode();
     }
 
 
@@ -198,17 +179,17 @@ public class InputManager implements KeyListener, MouseListener,
    
     private synchronized void recenterMouse() {
         centerLocation();
-		if (robot != null && comp.isShowing()) {
+		if (inputManagerProduct.getRobot() != null && comp.isShowing()) {
             SwingUtilities.convertPointToScreen(centerLocation,
                 comp);
             isRecentering = true;
-            robot.mouseMove(centerLocation.x, centerLocation.y);
+            inputManagerProduct.getRobot().mouseMove(centerLocation.x, centerLocation.y);
         }
     }
 
 
 	private void centerLocation() {
-		if (robot != null && comp.isShowing()) {
+		if (inputManagerProduct.getRobot() != null && comp.isShowing()) {
 			CenterLocation();
 		}
 	}
@@ -342,7 +323,7 @@ public class InputManager implements KeyListener, MouseListener,
             mouseHelper(MOUSE_MOVE_LEFT, MOUSE_MOVE_RIGHT, dx);
             mouseHelper(MOUSE_MOVE_UP, MOUSE_MOVE_DOWN, dy);
 
-            if (isRelativeMouseMode()) {
+            if (inputManagerProduct.isRelativeMouseMode()) {
                 recenterMouse();
             }
         }

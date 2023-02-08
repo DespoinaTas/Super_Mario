@@ -14,8 +14,8 @@ import com.TETOSOFT.graphics.Sprite;
 */
 public class TileMap {
 
-    private Image[][] tiles;
-    private LinkedList sprites;
+    private TileMapProduct tileMapProduct = new TileMapProduct();
+	private Image[][] tiles;
     private Sprite player;
 
     /**
@@ -24,7 +24,7 @@ public class TileMap {
     */
     public TileMap(int width, int height) {
         tiles = new Image[width][height];
-        sprites = new LinkedList();
+        tileMapProduct.setSprites(new LinkedList());
     }
 
 
@@ -89,7 +89,7 @@ public class TileMap {
         Adds a Sprite object to this map.
     */
     public void addSprite(Sprite sprite) {
-        sprites.add(sprite);
+        tileMapProduct.getSprites2().add(sprite);
     }
 
 
@@ -97,7 +97,7 @@ public class TileMap {
         Removes a Sprite object from this map.
     */
     public void removeSprite(Sprite sprite) {
-        sprites.remove(sprite);
+        tileMapProduct.removeSprite(sprite);
     }
 
 
@@ -106,7 +106,7 @@ public class TileMap {
         excluding the player Sprite.
     */
     public Iterator getSprites() {
-        return sprites.iterator();
+        return tileMapProduct.getSprites();
     }
 
 }

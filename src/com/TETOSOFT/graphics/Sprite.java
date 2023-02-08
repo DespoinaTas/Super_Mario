@@ -4,14 +4,9 @@ import java.awt.Image;
 
 public class Sprite {
 
-    protected Animation anim;
-    
-    private float x;
-    private float y;
-    
-    private float dx;
-    private float dy;
+    private SpriteProduct spriteProduct = new SpriteProduct();
 
+	protected Animation anim;
     
     public Sprite(Animation anim) 
     {
@@ -22,32 +17,30 @@ public class Sprite {
     
     public void update(long elapsedTime) 
     {
-        x += dx * elapsedTime;
-        y += dy * elapsedTime;
-        anim.update(elapsedTime);
+        spriteProduct.update(elapsedTime, this.anim);
     }
 
     
     public float getX() 
     {
-        return x;
+        return spriteProduct.getX();
     }
 
     
     public float getY() {
-        return y;
+        return spriteProduct.getY();
     }
 
     
     public void setX(float x) 
     {
-        this.x = x;
+        spriteProduct.setX(x);
     }
 
    
     public void setY(float y)
     {
-        this.y = y;
+        spriteProduct.setY(y);
     }
 
    
@@ -65,25 +58,25 @@ public class Sprite {
     
     public float getVelocityX() 
     {
-        return dx;
+        return spriteProduct.getDx();
     }
 
    
     public float getVelocityY()
     {
-        return dy;
+        return spriteProduct.getDy();
     }
 
     
     public void setVelocityX(float dx) 
     {
-        this.dx = dx;
+        spriteProduct.setDx(dx);
     }
 
     
     public void setVelocityY(float dy) 
     {
-        this.dy = dy;
+        spriteProduct.setDy(dy);
     }
 
     
