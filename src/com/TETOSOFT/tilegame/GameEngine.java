@@ -359,25 +359,38 @@ public class GameEngine extends GameCore
         // remove it from the map
         map.removeSprite(powerUp);
         
-        if (powerUp instanceof PowerUp.Star) {
-            // do something here, like give the player points
-            collectedStars++;
-            if(collectedStars==100) 
-            {
-                numLives++;
-                collectedStars=0;
-            }
-            
-        } else if (powerUp instanceof PowerUp.Music) {
-            // change the music
-            
-        } else if (powerUp instanceof PowerUp.Goal) {
-            // advance to next map      
-      
-            map = mapLoader.loadNextMap();
-            
-        }
+        powerUp.acquirePowerUp(this);
     }
+
+
+	public MapLoader getMapLoader() {
+		return mapLoader;
+	}
+
+
+	public int getCollectedStars() {
+		return collectedStars;
+	}
+
+
+	public int getNumLives() {
+		return numLives;
+	}
+
+
+	public void setMap(TileMap map) {
+		this.map = map;
+	}
+
+
+	public void setCollectedStars(int collectedStars) {
+		this.collectedStars = collectedStars;
+	}
+
+
+	public void setNumLives(int numLives) {
+		this.numLives = numLives;
+	}
     
       
 }

@@ -2,6 +2,7 @@ package com.TETOSOFT.tilegame.sprites;
 
 import java.lang.reflect.Constructor;
 import com.TETOSOFT.graphics.*;
+import com.TETOSOFT.tilegame.GameEngine;
 
 /**
     A PowerUp class is a Sprite that the player can pick up.
@@ -34,6 +35,14 @@ public abstract class PowerUp extends Sprite {
         public Star(Animation anim) {
             super(anim);
         }
+
+		public void acquirePowerUp(GameEngine gameEngine) {
+			gameEngine.setCollectedStars(gameEngine.getCollectedStars() + 1);
+			if (gameEngine.getCollectedStars() == 100) {
+				gameEngine.setNumLives(gameEngine.getNumLives() + 1);
+				gameEngine.setCollectedStars(0);
+			}
+		}
     }
 
 
@@ -44,6 +53,9 @@ public abstract class PowerUp extends Sprite {
         public Music(Animation anim) {
             super(anim);
         }
+
+		public void acquirePowerUp(GameEngine gameEngine) {
+		}
     }
 
 
@@ -54,6 +66,13 @@ public abstract class PowerUp extends Sprite {
         public Goal(Animation anim) {
             super(anim);
         }
+
+		public void acquirePowerUp(GameEngine gameEngine) {
+			gameEngine.setMap(gameEngine.getMapLoader().loadNextMap());
+		}
     }
+
+
+	public abstract void acquirePowerUp(GameEngine gameEngine);
 
 }
