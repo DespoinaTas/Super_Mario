@@ -67,14 +67,8 @@ public class MapLoader
     private Image getScaledImage(Image image, float x, float y) 
     {
 
-        // set up the transform
-        AffineTransform transform = new AffineTransform();
-        transform.scale(x, y);
-        transform.translate(
-            (x-1) * image.getWidth(null) / 2,
-            (y-1) * image.getHeight(null) / 2);
-
-        // create a transparent (not translucent) image
+        AffineTransform transform = transform(image, x, y);
+		// create a transparent (not translucent) image
         Image newImage = gc.createCompatibleImage(
             image.getWidth(null),
             image.getHeight(null),
@@ -87,6 +81,14 @@ public class MapLoader
 
         return newImage;
     }
+
+
+	private AffineTransform transform(Image image, float x, float y) {
+		AffineTransform transform = new AffineTransform();
+		transform.scale(x, y);
+		transform.translate((x - 1) * image.getWidth(null) / 2, (y - 1) * image.getHeight(null) / 2);
+		return transform;
+	}
 
 
     public TileMap loadNextMap() 
@@ -132,8 +134,8 @@ public class MapLoader
         throws IOException
     {
         ArrayList lines = new ArrayList();
-        int width = 0;
-        int height = 0;
+        int width = width(filename);
+		int height = 0;
 
         // read every line in the text file into the list
         BufferedReader reader = new BufferedReader(
@@ -149,7 +151,6 @@ public class MapLoader
             // add every line except for comments
             if (!line.startsWith("#")) {
                 lines.add(line);
-                width = Math.max(width, line.length());
             }
         }
 
@@ -186,38 +187,58 @@ public class MapLoader
             }
         }
 
-        // add the player to the map
-        Sprite player = (Sprite)playerSprite.clone();
-        player.setX(TileMapDrawer.tilesToPixels(3));
-        player.setY(lines.size());
-        newMap.setPlayer(player);
+        Sprite player = player(lines);
+		newMap.setPlayer(player);
 
         return newMap;
     }
+
+
+	private int width(String filename) throws FileNotFoundException, IOException {
+		int width = 0;
+		BufferedReader reader = new BufferedReader(new FileReader(filename));
+		while (true) {
+			String line = reader.readLine();
+			if (line == null) {
+				break;
+			}
+			if (!line.startsWith("#")) {
+				width = Math.max(width, line.length());
+			}
+		}
+		return width;
+	}
+
+
+	private Sprite player(ArrayList lines) {
+		Sprite player = (Sprite) playerSprite.clone();
+		player.setX(TileMapDrawer.tilesToPixels(3));
+		player.setY(lines.size());
+		return player;
+	}
 
 
     private void addSprite(TileMap map,
         Sprite hostSprite, int tileX, int tileY)
     {
         if (hostSprite != null) {
-            // clone the sprite from the "host"
-            Sprite sprite = (Sprite)hostSprite.clone();
-
-            // center the sprite
-            sprite.setX(
-                TileMapDrawer.tilesToPixels(tileX) +
-                (TileMapDrawer.tilesToPixels(1) -
-                sprite.getWidth()) / 2);
-
-            // bottom-justify the sprite
-            sprite.setY(
-                TileMapDrawer.tilesToPixels(tileY + 1) -
-                sprite.getHeight());
-
-            // add it to the map
-            map.addSprite(sprite);
+            map(map, hostSprite, tileX, tileY);
         }
     }
+
+
+	private void map(TileMap map, Sprite hostSprite, int tileX, int tileY) {
+		Sprite sprite = sprite(hostSprite, tileX, tileY);
+		map.addSprite(sprite);
+	}
+
+
+	private Sprite sprite(Sprite hostSprite, int tileX, int tileY) {
+		Sprite sprite = (Sprite) hostSprite.clone();
+		sprite.setX(TileMapDrawer.tilesToPixels(tileX) + (TileMapDrawer.tilesToPixels(1) - sprite.getWidth()) / 2);
+		sprite.setY(TileMapDrawer.tilesToPixels(tileY + 1) - sprite.getHeight());
+		return sprite;
+	}
 
 
     // -----------------------------------------------------------
@@ -249,23 +270,8 @@ public class MapLoader
     public void loadCreatureSprites() 
     {
 
-        Image[][] images = new Image[4][];
-
-        // load left-facing images
-        images[0] = new Image[] {
-            loadImage("player.png"),         
-            loadImage("fly1.png"),
-            loadImage("fly2.png"),
-            loadImage("fly3.png"),
-            loadImage("grub1.png"),
-            loadImage("grub2.png"),
-        };
-
-        images[1] = new Image[images[0].length];
-        images[2] = new Image[images[0].length];
-        images[3] = new Image[images[0].length];
-        
-        for (int i=0; i<images[0].length; i++) 
+        Image[][] images = images();
+		for (int i=0; i<images[0].length; i++) 
         {
             // right-facing images
             images[1][i] = getMirrorImage(images[0][i]);
@@ -292,6 +298,17 @@ public class MapLoader
         flySprite = new Fly (flyAnim[0], flyAnim[1],flyAnim[2], flyAnim[3]);
         grubSprite = new Grub (grubAnim[0], grubAnim[1],grubAnim[2], grubAnim[3]);
     }
+
+
+	private Image[][] images() {
+		Image[][] images = new Image[4][];
+		images[0] = new Image[] { loadImage("player.png"), loadImage("fly1.png"), loadImage("fly2.png"),
+				loadImage("fly3.png"), loadImage("grub1.png"), loadImage("grub2.png") };
+		images[1] = new Image[images[0].length];
+		images[2] = new Image[images[0].length];
+		images[3] = new Image[images[0].length];
+		return images;
+	}
 
 
     private Animation createPlayerAnim(Image player)

@@ -142,35 +142,60 @@ public abstract class Creature extends Sprite {
         Updates the animaton for this creature.
     */
     public void update(long elapsedTime) {
-        // select the correct Animation
-        Animation newAnim = anim;
-        if (getVelocityX() < 0) {
-            newAnim = left;
-        }
-        else if (getVelocityX() > 0) {
-            newAnim = right;
-        }
-        if (state == STATE_DYING && newAnim == left) {
-            newAnim = deadLeft;
-        }
-        else if (state == STATE_DYING && newAnim == right) {
-            newAnim = deadRight;
-        }
-
-        // update the Animation
-        if (anim != newAnim) {
-            anim = newAnim;
-            anim.start();
-        }
-        else {
-            anim.update(elapsedTime);
-        }
-
-        // update to "dead" state
+        Animation newAnim = newAnim(elapsedTime);
+		// update to "dead" state
         stateTime += elapsedTime;
         if (state == STATE_DYING && stateTime >= DIE_TIME) {
             setState(STATE_DEAD);
         }
     }
+
+
+	private Animation newAnim(long elapsedTime) {
+		Animation newAnim = anim;
+		if (getVelocityX() < 0) {
+			newAnim = left;
+		} else if (getVelocityX() > 0) {
+			newAnim = right;
+		}
+		deadLeft(elapsedTime, newAnim);
+		if (state == STATE_DYING && newAnim == left) {
+			newAnim = deadLeft;
+		} else if (state == STATE_DYING && newAnim == right) {
+			newAnim = deadRight;
+		}
+		return newAnim;
+	}
+
+
+	private void deadLeft(long elapsedTime, Animation newAnim) {
+		newAnim = NewAnim(newAnim);
+		anim(elapsedTime, newAnim);
+	}
+
+
+	private Animation NewAnim(Animation newAnim) {
+		if (state == STATE_DYING && newAnim == left) {
+			newAnim = deadLeft;
+		} else if (state == STATE_DYING && newAnim == right) {
+			newAnim = deadRight;
+		}
+		return newAnim;
+	}
+
+
+	private void anim(long elapsedTime, Animation newAnim) {
+		if (anim != newAnim) {
+			NewAnima(newAnim);
+		} else {
+			anim.update(elapsedTime);
+		}
+	}
+
+
+	private void NewAnima(Animation newAnim) {
+		anim = newAnim;
+		anim.start();
+	}
 
 }

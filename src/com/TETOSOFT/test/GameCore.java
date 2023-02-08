@@ -81,18 +81,26 @@ public abstract class GameCore {
     */
     public void init() 
     {
-        screen = new ScreenManager();
-        DisplayMode displayMode =
-        screen.findFirstCompatibleMode(POSSIBLE_MODES);
-        screen.setFullScreen(displayMode);
-
-        Window window = screen.getFullScreenWindow();
-        window.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));
-        window.setBackground(Color.BLACK);
-        window.setForeground(Color.WHITE);
-
+        Window window = window();
+		window.setBackground(Color.BLACK);
         isRunning = true;
     }
+
+
+	private Window window() {
+		screen();
+		Window window = screen.getFullScreenWindow();
+		window.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));
+		window.setForeground(Color.WHITE);
+		return window;
+	}
+
+
+	private void screen() {
+		screen = new ScreenManager();
+		DisplayMode displayMode = screen.findFirstCompatibleMode(POSSIBLE_MODES);
+		screen.setFullScreen(displayMode);
+	}
 
 
     public Image loadImage(String fileName) {

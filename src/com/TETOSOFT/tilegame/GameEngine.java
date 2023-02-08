@@ -42,16 +42,21 @@ public class GameEngine extends GameCore
         // set up input manager
         initInput();
         
-        // start resource manager
-        mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
-        
-        // load resources
-        drawer = new TileMapDrawer();
-        drawer.setBackground(mapLoader.loadImage("background.jpg"));
-        
-        // load first map
-        map = mapLoader.loadNextMap();
+        drawer();
     }
+
+
+	private void drawer() {
+		mapLoader();
+		drawer = new TileMapDrawer();
+		drawer.setBackground(mapLoader.loadImage("background.jpg"));
+	}
+
+
+	private void mapLoader() {
+		mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+		map = mapLoader.loadNextMap();
+	}
     
     
     /**
@@ -86,24 +91,38 @@ public class GameEngine extends GameCore
             stop();
         }
         
-        Player player = (Player)map.getPlayer();
-        if (player.isAlive()) 
-        {
-            float velocityX = 0;
-            if (moveLeft.isPressed()) 
-            {
-                velocityX-=player.getMaxSpeed();
-            }
-            if (moveRight.isPressed()) {
-                velocityX+=player.getMaxSpeed();
-            }
-            if (jump.isPressed()) {
-                player.jump(false);
-            }
-            player.setVelocityX(velocityX);
-        }
+        jump();
         
     }
+
+
+	private void jump() {
+		Player player = (Player) map.getPlayer();
+		if (player.isAlive()) {
+			float velocityX = velocityX(player);
+		}
+	}
+
+
+	private float velocityX(Player player) {
+		float velocityX = 0;
+		if (moveLeft.isPressed()) {
+			velocityX -= player.getMaxSpeed();
+		}
+		if (moveRight.isPressed()) {
+			velocityX += player.getMaxSpeed();
+		}
+		player(player, velocityX);
+		return velocityX;
+	}
+
+
+	private void player(Player player, float velocityX) {
+		if (jump.isPressed()) {
+			player.jump(false);
+		}
+		player.setVelocityX(velocityX);
+	}
     
     
     public void draw(Graphics2D g) {
@@ -245,17 +264,25 @@ public class GameEngine extends GameCore
         while (i.hasNext()) {
             Sprite sprite = (Sprite)i.next();
             if (sprite instanceof Creature) {
-                Creature creature = (Creature)sprite;
-                if (creature.getState() == Creature.STATE_DEAD) {
+                Creature creature = creature(elapsedTime, sprite);
+				if (creature.getState() == Creature.STATE_DEAD) {
                     i.remove();
                 } else {
-                    updateCreature(creature, elapsedTime);
                 }
             }
-            // normal update
-            sprite.update(elapsedTime);
         }
     }
+
+
+	private Creature creature(long elapsedTime, Sprite sprite) {
+		Creature creature = (Creature) sprite;
+		if (creature.getState() == Creature.STATE_DEAD) {
+		} else {
+			updateCreature(creature, elapsedTime);
+		}
+		sprite.update(elapsedTime);
+		return creature;
+	}
     
     
     /**
@@ -338,10 +365,8 @@ public class GameEngine extends GameCore
         if (collisionSprite instanceof PowerUp) {
             acquirePowerUp((PowerUp)collisionSprite);
         } else if (collisionSprite instanceof Creature) {
-            Creature badguy = (Creature)collisionSprite;
-            if (canKill) {
-                // kill the badguy and make player bounce
-                badguy.setState(Creature.STATE_DYING);
+            Creature badguy = badguy(canKill, collisionSprite);
+			if (canKill) {
                 player.setY(badguy.getY() - player.getHeight());
                 player.jump(true);
             } else {
@@ -359,6 +384,16 @@ public class GameEngine extends GameCore
             }
         }
     }
+
+
+	private Creature badguy(boolean canKill, Sprite collisionSprite) {
+		Creature badguy = (Creature) collisionSprite;
+		if (canKill) {
+			badguy.setState(Creature.STATE_DYING);
+		} else {
+		}
+		return badguy;
+	}
     
     
     /**

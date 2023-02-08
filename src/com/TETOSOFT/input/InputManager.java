@@ -70,20 +70,25 @@ public class InputManager implements KeyListener, MouseListener,
             return;
         }
 
-        if (mode) {
-            try {
-                robot = new Robot();
-                recenterMouse();
-            }
-            catch (AWTException ex) {
-                
-                robot = null;
-            }
+        robot(mode);
+		if (mode) {
         }
         else {
             robot = null;
         }
     }
+
+
+	private void robot(boolean mode) {
+		if (mode) {
+			try {
+				robot = new Robot();
+			} catch (AWTException ex) {
+				robot = null;
+			}
+		} else {
+		}
+	}
 
 
     public boolean isRelativeMouseMode() {
@@ -192,15 +197,27 @@ public class InputManager implements KeyListener, MouseListener,
 
    
     private synchronized void recenterMouse() {
-        if (robot != null && comp.isShowing()) {
-            centerLocation.x = comp.getWidth() / 2;
-            centerLocation.y = comp.getHeight() / 2;
+        centerLocation();
+		if (robot != null && comp.isShowing()) {
             SwingUtilities.convertPointToScreen(centerLocation,
                 comp);
             isRecentering = true;
             robot.mouseMove(centerLocation.x, centerLocation.y);
         }
     }
+
+
+	private void centerLocation() {
+		if (robot != null && comp.isShowing()) {
+			CenterLocation();
+		}
+	}
+
+
+	private void CenterLocation() {
+		centerLocation.x = comp.getWidth() / 2;
+		centerLocation.y = comp.getHeight() / 2;
+	}
 
 
     private GameAction getKeyAction(KeyEvent e) {
@@ -330,10 +347,15 @@ public class InputManager implements KeyListener, MouseListener,
             }
         }
 
-        mouseLocation.x = e.getX();
-        mouseLocation.y = e.getY();
+        mouseLocation(e);
 
     }
+
+
+	private void mouseLocation(MouseEvent e) {
+		mouseLocation.x = e.getX();
+		mouseLocation.y = e.getY();
+	}
 
 
     // from the MouseWheelListener interface
@@ -345,17 +367,27 @@ public class InputManager implements KeyListener, MouseListener,
     private void mouseHelper(int codeNeg, int codePos,
         int amount)
     {
-        GameAction gameAction;
-        if (amount < 0) {
-            gameAction = mouseActions[codeNeg];
-        }
-        else {
-            gameAction = mouseActions[codePos];
-        }
-        if (gameAction != null) {
-            gameAction.press(Math.abs(amount));
-            gameAction.release();
+        GameAction gameAction = gameAction(codeNeg, codePos, amount);
+		if (gameAction != null) {
+            GameAction(amount, gameAction);
         }
     }
+
+
+	private void GameAction(int amount, GameAction gameAction) {
+		gameAction.press(Math.abs(amount));
+		gameAction.release();
+	}
+
+
+	private GameAction gameAction(int codeNeg, int codePos, int amount) {
+		GameAction gameAction;
+		if (amount < 0) {
+			gameAction = mouseActions[codeNeg];
+		} else {
+			gameAction = mouseActions[codePos];
+		}
+		return gameAction;
+	}
 
 }

@@ -77,44 +77,40 @@ public class ScreenManager
 
     public void setFullScreen(DisplayMode displayMode) 
     {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setUndecorated(true);
-        frame.setIgnoreRepaint(true);
-        frame.setResizable(false);
-
-        device.setFullScreenWindow(frame);
-
-        if (displayMode != null && device.isDisplayChangeSupported())
+        device(displayMode);
+		if (displayMode != null && device.isDisplayChangeSupported())
         {
             try {
                 device.setDisplayMode(displayMode);
             }
             catch (IllegalArgumentException ex) { }
-
-            frame.setSize(displayMode.getWidth(), displayMode.getHeight());
-        }
-        
-        try {
-            EventQueue.invokeAndWait(new Runnable() 
-            {
-                public void run() 
-                {
-                    frame.createBufferStrategy(2);
-                }
-            });
-        }
-        catch (InterruptedException ex) 
-        {
-            // ignore
-        }
-        catch (InvocationTargetException  ex) 
-        {
-            // ignore
         }
 
 
     }
+
+
+
+	private void device(DisplayMode displayMode) throws HeadlessException {
+		final JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setUndecorated(true);
+		frame.setIgnoreRepaint(true);
+		frame.setResizable(false);
+		device.setFullScreenWindow(frame);
+		if (displayMode != null && device.isDisplayChangeSupported()) {
+			frame.setSize(displayMode.getWidth(), displayMode.getHeight());
+		}
+		try {
+			EventQueue.invokeAndWait(new Runnable() {
+				public void run() {
+					frame.createBufferStrategy(2);
+				}
+			});
+		} catch (InterruptedException ex) {
+		} catch (InvocationTargetException ex) {
+		}
+	}
 
     
     public Graphics2D getGraphics() 
