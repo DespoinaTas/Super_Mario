@@ -4,7 +4,7 @@ package com.TETOSOFT.tilegame;
 import com.TETOSOFT.graphics.Sprite;
 import java.util.ArrayList;
 
-public class MapLoaderProduct3 {
+public class MapLoaderProductPlayer {
 	private Sprite playerSprite;
 
 	public void setPlayerSprite(Sprite playerSprite) {

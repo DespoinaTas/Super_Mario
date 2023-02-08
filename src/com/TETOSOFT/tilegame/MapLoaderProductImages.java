@@ -7,7 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.Transparency;
 import java.awt.Graphics2D;
 
-public class MapLoaderProduct2 {
+public class MapLoaderProductImages {
 	private GraphicsConfiguration gc;
 
 	public void setGc(GraphicsConfiguration gc) {

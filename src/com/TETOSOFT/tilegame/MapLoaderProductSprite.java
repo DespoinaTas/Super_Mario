@@ -10,8 +10,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.awt.Image;
 
-public class MapLoaderProduct4 {
-	private MapLoaderProduct3 mapLoaderProduct3 = new MapLoaderProduct3();
+public class MapLoaderProductSprite {
+	private MapLoaderProductPlayer mapLoaderProductPlayer = new MapLoaderProductPlayer();
 	private MapLoaderProduct mapLoaderProduct = new MapLoaderProduct();
 	private Sprite musicSprite;
 	private Sprite coinSprite;
@@ -19,8 +19,8 @@ public class MapLoaderProduct4 {
 	private Sprite grubSprite;
 	private Sprite flySprite;
 
-	public MapLoaderProduct3 getMapLoaderProduct3() {
-		return mapLoaderProduct3;
+	public MapLoaderProductPlayer getMapLoaderProduct3() {
+		return mapLoaderProductPlayer;
 	}
 
 	public MapLoaderProduct getMapLoaderProduct() {
@@ -36,7 +36,7 @@ public class MapLoaderProduct4 {
 	}
 
 	public void map(TileMap map, Sprite hostSprite, int tileX, int tileY) {
-		Sprite sprite = mapLoaderProduct3.sprite(hostSprite, tileX, tileY);
+		Sprite sprite = mapLoaderProductPlayer.sprite(hostSprite, tileX, tileY);
 		map.addSprite(sprite);
 	}
 
@@ -97,7 +97,7 @@ public class MapLoaderProduct4 {
 				}
 			}
 		}
-		Sprite player = mapLoaderProduct3.player(lines);
+		Sprite player = mapLoaderProductPlayer.player(lines);
 		newMap.setPlayer(player);
 		return newMap;
 	}

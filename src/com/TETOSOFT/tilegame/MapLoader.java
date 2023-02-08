@@ -17,8 +17,8 @@ import com.TETOSOFT.tilegame.sprites.*;
 */
 public class MapLoader 
 {
-    private MapLoaderProduct4 mapLoaderProduct4 = new MapLoaderProduct4();
-	private MapLoaderProduct2 mapLoaderProduct2 = new MapLoaderProduct2();
+    private MapLoaderProductSprite mapLoaderProductSprite = new MapLoaderProductSprite();
+	private MapLoaderProductImages mapLoaderProductImages = new MapLoaderProductImages();
 	public int currentMap;
     /**
         Creates a new ResourceManager with the specified
@@ -26,10 +26,10 @@ public class MapLoader
     */
     public MapLoader(GraphicsConfiguration gc) 
     {
-        mapLoaderProduct2.setGc(gc);
-        mapLoaderProduct4.getMapLoaderProduct().loadTileImages();
+        mapLoaderProductImages.setGc(gc);
+        mapLoaderProductSprite.getMapLoaderProduct().loadTileImages();
         loadCreatureSprites();
-        mapLoaderProduct4.loadPowerUpSprites();
+        mapLoaderProductSprite.loadPowerUpSprites();
     }
 
 
@@ -38,19 +38,19 @@ public class MapLoader
     */
     public Image loadImage(String name) 
     {
-        return mapLoaderProduct4.getMapLoaderProduct().loadImage(name);
+        return mapLoaderProductSprite.getMapLoaderProduct().loadImage(name);
     }
 
 
     public Image getMirrorImage(Image image) 
     {
-        return mapLoaderProduct2.getScaledImage(image, -1, 1);
+        return mapLoaderProductImages.getScaledImage(image, -1, 1);
     }
 
 
     public Image getFlippedImage(Image image) 
     {
-        return mapLoaderProduct2.getScaledImage(image, 1, -1);
+        return mapLoaderProductImages.getScaledImage(image, 1, -1);
     }
 
 
@@ -61,7 +61,7 @@ public class MapLoader
         {
             currentMap++;
             try {
-                map = mapLoaderProduct4.loadMap(
+                map = mapLoaderProductSprite.loadMap(
                     "maps/map" + currentMap + ".txt", this);
             }
             catch (IOException ex) 
@@ -83,7 +83,7 @@ public class MapLoader
     public TileMap reloadMap() 
     {
         try {
-            return mapLoaderProduct4.loadMap(
+            return mapLoaderProductSprite.loadMap(
                 "maps/map" + currentMap + ".txt", this);
         }
         catch (IOException ex) {
@@ -113,7 +113,7 @@ public class MapLoader
         Sprite hostSprite, int tileX, int tileY)
     {
         if (hostSprite != null) {
-            mapLoaderProduct4.map(map, hostSprite, tileX, tileY);
+            mapLoaderProductSprite.map(map, hostSprite, tileX, tileY);
         }
     }
 
@@ -131,7 +131,7 @@ public class MapLoader
 
     public void loadTileImages()
     {
-        mapLoaderProduct4.getMapLoaderProduct().loadTileImages();
+        mapLoaderProductSprite.getMapLoaderProduct().loadTileImages();
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,7 +139,7 @@ public class MapLoader
     public void loadCreatureSprites() 
     {
 
-        Image[][] images = mapLoaderProduct4.getMapLoaderProduct().images();
+        Image[][] images = mapLoaderProductSprite.getMapLoaderProduct().images();
 		for (int i=0; i<images[0].length; i++) 
         {
             // right-facing images
@@ -163,9 +163,9 @@ public class MapLoader
         }
 
         // create creature sprites
-        mapLoaderProduct4.getMapLoaderProduct3().setPlayerSprite(new Player(playerAnim[0], playerAnim[1], playerAnim[2], playerAnim[3]));
-        mapLoaderProduct4.setFlySprite(new Fly(flyAnim[0], flyAnim[1], flyAnim[2], flyAnim[3]));
-        mapLoaderProduct4.setGrubSprite(new Grub(grubAnim[0], grubAnim[1], grubAnim[2], grubAnim[3]));
+        mapLoaderProductSprite.getMapLoaderProduct3().setPlayerSprite(new Player(playerAnim[0], playerAnim[1], playerAnim[2], playerAnim[3]));
+        mapLoaderProductSprite.setFlySprite(new Fly(flyAnim[0], flyAnim[1], flyAnim[2], flyAnim[3]));
+        mapLoaderProductSprite.setGrubSprite(new Grub(grubAnim[0], grubAnim[1], grubAnim[2], grubAnim[3]));
     }
 
 
