@@ -112,20 +112,12 @@ public class GameEngine extends GameCore
 		if (moveRight.isPressed()) {
 			velocityX += player.getMaxSpeed();
 		}
-		player(player, velocityX);
+		player.player(velocityX, jump);
 		return velocityX;
 	}
 
 
-	private void player(Player player, float velocityX) {
-		if (jump.isPressed()) {
-			player.jump(false);
-		}
-		player.setVelocityX(velocityX);
-	}
-    
-    
-    public void draw(Graphics2D g) {
+	public void draw(Graphics2D g) {
         
         drawer.draw(g, map, screen.getWidth(), screen.getHeight());
         g.setColor(Color.WHITE);
@@ -146,43 +138,6 @@ public class GameEngine extends GameCore
     public TileMap getMap() {
         return map;
     }
-    
-    /**
-     * Gets the tile that a Sprites collides with. Only the
-     * Sprite's X or Y should be changed, not both. Returns null
-     * if no collision is detected.
-     */
-    public Point getTileCollision(Sprite sprite, float newX, float newY) 
-    {
-        float fromX = Math.min(sprite.getX(), newX);
-        float fromY = Math.min(sprite.getY(), newY);
-        float toX = Math.max(sprite.getX(), newX);
-        float toY = Math.max(sprite.getY(), newY);
-        
-        // get the tile locations
-        int fromTileX = TileMapDrawer.pixelsToTiles(fromX);
-        int fromTileY = TileMapDrawer.pixelsToTiles(fromY);
-        int toTileX = TileMapDrawer.pixelsToTiles(
-                toX + sprite.getWidth() - 1);
-        int toTileY = TileMapDrawer.pixelsToTiles(
-                toY + sprite.getHeight() - 1);
-        
-        // check each tile for a collision
-        for (int x=fromTileX; x<=toTileX; x++) {
-            for (int y=fromTileY; y<=toTileY; y++) {
-                if (x < 0 || x >= map.getWidth() ||
-                        map.getTile(x, y) != null) {
-                    // collision found, return the tile
-                    pointCache.setLocation(x, y);
-                    return pointCache;
-                }
-            }
-        }
-        
-        // no collision found
-        return null;
-    }
-    
     
     /**
      * Checks if two Sprites collide with one another. Returns
@@ -303,7 +258,7 @@ public class GameEngine extends GameCore
         float oldX = creature.getX();
         float newX = oldX + dx * elapsedTime;
         Point tile =
-                getTileCollision(creature, newX, creature.getY());
+                creature.getTileCollision(newX, creature.getY(), map, pointCache);
         if (tile == null) {
             creature.setX(newX);
         } else {
@@ -326,7 +281,7 @@ public class GameEngine extends GameCore
         float dy = creature.getVelocityY();
         float oldY = creature.getY();
         float newY = oldY + dy * elapsedTime;
-        tile = getTileCollision(creature, creature.getX(), newY);
+        tile = creature.getTileCollision(creature.getX(), newY, map, pointCache);
         if (tile == null) {
             creature.setY(newY);
         } else {

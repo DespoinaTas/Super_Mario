@@ -1,6 +1,7 @@
 package com.TETOSOFT.tilegame.sprites;
 
 import com.TETOSOFT.graphics.Animation;
+import com.TETOSOFT.input.GameAction;
 
 /**
     The Player.
@@ -61,5 +62,13 @@ public class Player extends Creature
     public float getMaxSpeed() {
         return 0.5f;
     }
+
+
+	public void player(float velocityX, GameAction jump) {
+		if (jump.isPressed()) {
+			jump(false);
+		}
+		setVelocityX(velocityX);
+	}
 
 }

@@ -1,6 +1,9 @@
 package com.TETOSOFT.graphics;
 
+import com.TETOSOFT.tilegame.TileMap;
+import com.TETOSOFT.tilegame.TileMapDrawer;
 import java.awt.Image;
+import java.awt.Point;
 
 public class Sprite {
 
@@ -90,4 +93,31 @@ public class Sprite {
     {
         return new Sprite(anim);
     }
+
+
+
+	/**
+	 * Gets the tile that a Sprites collides with. Only the Sprite's X or Y should be changed, not both. Returns null if no collision is detected.
+	 * @param map
+	 * @param pointCache
+	 */
+	public Point getTileCollision(float newX, float newY, TileMap map, Point pointCache) {
+		float fromX = Math.min(getX(), newX);
+		float fromY = Math.min(getY(), newY);
+		float toX = Math.max(getX(), newX);
+		float toY = Math.max(getY(), newY);
+		int fromTileX = TileMapDrawer.pixelsToTiles(fromX);
+		int fromTileY = TileMapDrawer.pixelsToTiles(fromY);
+		int toTileX = TileMapDrawer.pixelsToTiles(toX + getWidth() - 1);
+		int toTileY = TileMapDrawer.pixelsToTiles(toY + getHeight() - 1);
+		for (int x = fromTileX; x <= toTileX; x++) {
+			for (int y = fromTileY; y <= toTileY; y++) {
+				if (x < 0 || x >= map.getWidth() || map.getTile(x, y) != null) {
+					pointCache.setLocation(x, y);
+					return pointCache;
+				}
+			}
+		}
+		return null;
+	}
 }

@@ -23,7 +23,7 @@ import com.TETOSOFT.tilegame.sprites.Creature;
 public class TileMapDrawer 
 {
 
-    private static final int TILE_SIZE = 64;
+    public static final int TILE_SIZE = 64;
     // the size in bits of the tile
     // Math.pow(2, TILE_SIZE_BITS) == TILE_SIZE
     private static final int TILE_SIZE_BITS = 6;
@@ -79,80 +79,7 @@ public class TileMapDrawer
     public void draw(Graphics2D g, TileMap map,
         int screenWidth, int screenHeight)
     {
-        int offsetX = offsetX(map, screenWidth);
-		Sprite player = map.getPlayer();
-        int mapWidth = tilesToPixels(map.getWidth());
-
-        // get the y offset to draw all sprites and tiles
-        int offsetY = screenHeight -
-            tilesToPixels(map.getHeight());
-
-        // draw black background, if needed
-        if (background == null ||
-            screenHeight > background.getHeight(null))
-        {
-            g.setColor(Color.black);
-            g.fillRect(0, 0, screenWidth, screenHeight);
-        }
-
-        // draw parallax background image
-        if (background != null) {
-            int x = offsetX *
-                (screenWidth - background.getWidth(null)) /
-                (screenWidth - mapWidth);
-            int y = screenHeight - background.getHeight(null);
-
-            g.drawImage(background, x, y, null);
-        
-        }
-
-        // draw the visible tiles
-        int firstTileX = pixelsToTiles(-offsetX);
-        int lastTileX = firstTileX +
-            pixelsToTiles(screenWidth) + 1;
-        for (int y=0; y<map.getHeight(); y++) {
-            for (int x=firstTileX; x <= lastTileX; x++) {
-                Image image = map.getTile(x, y);
-                if (image != null) {
-                    g.drawImage(image,
-                        tilesToPixels(x) + offsetX,
-                        tilesToPixels(y) + offsetY,
-                        null);
-                }
-            }
-        }
-
-        // draw player
-        g.drawImage(player.getImage(),
-            Math.round(player.getX()) + offsetX,
-            Math.round(player.getY()) + offsetY,
-            null);
-
-        // draw sprites
-        Iterator i = map.getSprites();
-        while (i.hasNext()) {
-            Sprite sprite = (Sprite)i.next();
-            int x = Math.round(sprite.getX()) + offsetX;
-            int y = Math.round(sprite.getY()) + offsetY;
-            g.drawImage(sprite.getImage(), x, y, null);
-
-            // wake up the creature when it's on screen
-            if (sprite instanceof Creature &&
-                x >= 0 && x < screenWidth)
-            {
-                ((Creature)sprite).wakeUp();
-            }
-        }
+        map.draw(g, screenWidth, screenHeight, background);
     }
-
-
-	private int offsetX(TileMap map, int screenWidth) {
-		Sprite player = map.getPlayer();
-		int mapWidth = tilesToPixels(map.getWidth());
-		int offsetX = screenWidth / 2 - Math.round(player.getX()) - TILE_SIZE;
-		offsetX = Math.min(offsetX, 0);
-		offsetX = Math.max(offsetX, screenWidth - mapWidth);
-		return offsetX;
-	}
 
 }

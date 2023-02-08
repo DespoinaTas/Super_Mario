@@ -102,4 +102,10 @@ public class GameAction
         }
         return retVal;
     }
+
+
+	public void GameAction(int amount) {
+		press(Math.abs(amount));
+		release();
+	}
 }

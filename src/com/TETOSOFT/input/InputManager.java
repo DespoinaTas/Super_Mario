@@ -350,15 +350,9 @@ public class InputManager implements KeyListener, MouseListener,
     {
         GameAction gameAction = gameAction(codeNeg, codePos, amount);
 		if (gameAction != null) {
-            GameAction(amount, gameAction);
+            gameAction.GameAction(amount);
         }
     }
-
-
-	private void GameAction(int amount, GameAction gameAction) {
-		gameAction.press(Math.abs(amount));
-		gameAction.release();
-	}
 
 
 	private GameAction gameAction(int codeNeg, int codePos, int amount) {
